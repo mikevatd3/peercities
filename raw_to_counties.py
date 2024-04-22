@@ -141,7 +141,7 @@ df[
         "C67023": "age_62_to_64",
         "C67024": "age_65_to_74",
         "C67025": "age_75_to_84",
-        "C67026": "age_gt_85",
+        "C67026": "age_ge_85",
     }
 ).assign(
     state_code=lambda df: df["state_code"].apply(lambda s: f"{s:02}"),
@@ -201,52 +201,59 @@ df[
 )
 
 
+df = pd.read_csv(raw_dir / "nhgis0015_csv" / "nhgis0015_ds107_1980_county.csv")
+
 df[
     [
         "STATEA",
         "COUNTYA",
-        "DIA001",
-        "DIA002",
-        "DIA003",
-        "DIA004",
-        "DIA005",
-        "DIA006",
-        "DIA007",
-        "DIA008",
-        "DIA009",
-        "DIA010",
-        "DIA011",
-        "DIA012",
-        "DIA013",
-        "DIA014",
-        "DIA015",
+        "DID001",  # Are these there?
+        "DID002",
+        "DID003",
+        "DID004",
+        "DID005",
+        "DID006",
+        "DID007",
+        "DID008",
+        "DID009",
+        "DID010",
+        "DID011",
+        "DID012",
+        "DID013",
+        "DID014",
+        "DID015",
+        "DID016",
+        "DID017",
     ]
 ].rename(
     columns={
         "STATEA": "state_code",
         "COUNTYA": "county_code",
-        "DIA001": "ag_forestry_fish_mining",
-        "DIA002": "construction",
-        "DIA003": "manufacturing_nondurable",
-        "DIA004": "manufacturing_durable",
-        "DIA005": "transportation",
-        "DIA006": "comms_and_util",
-        "DIA007": "wholesale_trade",
-        "DIA008": "retail_trade",
-        "DIA009": "finance_insurance_realestate",
-        "DIA010": "business_repair",
-        "DIA011": "personal_entertainment_and_rec",
-        "DIA012": "health_services",
-        "DIA013": "educational_services",
-        "DIA014": "other_pro_services",
-        "DIA015": "public_admin",
+        "DID001": "inc_lt_2500",
+        "DID002": "inc_2500_4999",
+        "DID003": "inc_5000_7499",
+        "DID004": "inc_7500_9999",
+        "DID005": "inc_10000_12499",
+        "DID006": "inc_12500_14999",
+        "DID007": "inc_15000_17499",
+        "DID008": "inc_17500_19999",
+        "DID009": "inc_20000_22499",
+        "DID010": "inc_22500_24999",
+        "DID011": "inc_25000_27499",
+        "DID012": "inc_27500_29999",
+        "DID013": "inc_30000_34999",
+        "DID014": "inc_35000_39999",
+        "DID015": "inc_40000_49999",
+        "DID016": "inc_50000_74999",
+        "DID017": "inc_ge_75000",
     }
 ).assign(
     state_code=lambda df: df["state_code"].apply(lambda s: f"{s:02}"),
     county_code=lambda df: df["county_code"].apply(lambda s: f"{s:03}"),
 ).to_csv(
-    prepped_dir / "industry.csv", index=False
+    prepped_dir / "income.csv", index=False
 )
+
 
 df = pd.read_csv(raw_dir / "nhgis0014_csv" / "nhgis0014_ds104_1980_county.csv")
 
@@ -414,6 +421,7 @@ df = (
     .to_csv(prepped_dir / "precipitation.csv", index=False)
 )
 
+
 compiled_filename = "counties_with_details_1980.csv"
 
 
@@ -422,8 +430,16 @@ df = pd.concat(
         pd.read_csv(prepped_dir / item, dtype=str).set_index(
             ["state_code", "county_code"]
         )
-        for item in os.listdir(prepped_dir)
-        if item != compiled_filename
+        for item in [
+            "population.csv",
+            "age_brackets.csv",
+            "income.csv",
+            "work_hours.csv",
+            "transport_commute.csv",
+            "temperature.csv",
+            "precipitation.csv",
+            "industry.csv",
+        ]
     ],
     axis=1,
 )
