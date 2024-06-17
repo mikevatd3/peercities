@@ -1,5 +1,10 @@
 env
 *.csv
 *.zip
+*.gzip
 *.txt
 
+poetry.lock
+logs/documentation.log logs/documentation.log.1 logs/documentation.log.2 logs/documentation.log.3 logs/documentation.log.4 logs/documentation.log.5
+__pycache__
+raw/ave_temps.csv raw/CAEMP25N.zip raw/cbsa_crosswalk.csv raw/counties_crosswalk.csv raw/nhgis0014_csv raw/nhgis0014_csv.zip raw/nhgis0015_csv raw/nhgis0015_csv.zip raw/nhgis0016_csv raw/nhgis0016_csv.zip raw/nhgis0017_csv.zip raw/precip.csv raw/test.py

@@ -1,8 +1,9 @@
 from pathlib import Path
 import pandas as pd
-# from scipy.stats import entropy
+import numpy as np
+from scipy.stats import entropy
 
-from datastructure import engineered_variables
+from datastructure import engineered_variables, industry_variables
 
 cbsas = pd.read_csv(
     Path.cwd() / "prepped" / "1980" / "cbsa_details_1980.csv",
@@ -11,7 +12,7 @@ cbsas = pd.read_csv(
 
 
 # Variables for percent calculations
-
+"""
 commute_universe = cbsas[
     [
         "commute_lt_5",
@@ -24,6 +25,7 @@ commute_universe = cbsas[
         "commute_gt_60",  # 8
     ]
 ].sum(axis=1)
+"""
 
 age_universe = cbsas[
     [
@@ -79,52 +81,35 @@ income_universe = cbsas[
 ].sum(axis=1)
 
 
-industry_universe = cbsas[
-    [
-        "ag_forestry_fish_mining",
-        "construction",
-        "manufacturing_nondurable",
-        "manufacturing_durable",
-        "transportation",
-        "comms_and_util",
-        "wholesale_trade",
-        "retail_trade",
-        "finance_insurance_realestate",
-        "business_repair",
-        "personal_entertainment_and_rec",
-        "health_services",
-        "educational_services",
-        "other_pro_services",
-        "public_admin",  # 15
-    ]
-].sum(axis=1)
+industry_universe = cbsas[industry_variables].sum(axis=1)
 
 
-cbsas.assign(
-    pct_commute_lt_15=lambda df: df[
-        [
-            "commute_lt_5",
-            "commute_5_to_9",
-            "commute_10_to_14",
-        ]
-    ].sum(axis=1)
-    / commute_universe,
-    pct_commute_15_to_44=lambda df: df[
-        [
-            "commute_10_to_14",
-            "commute_15_to_20",
-            "commute_20_to_29",
-            "commute_30_to_44",
-        ]
-    ].sum(axis=1)
-    / commute_universe,
-    pct_commute_ge_45=lambda df: df[
-        [
-            "commute_45_to_59",
-            "commute_gt_60",
-        ]
-    ].sum(axis=1)
-    / commute_universe,
+cbsas = cbsas.assign(
+    log_persons=lambda df: np.log(df["persons"]),
+#  pct_commute_lt_15=lambda df: df[
+#       [
+#           "commute_lt_5",
+#           "commute_5_to_9",
+#           "commute_10_to_14",
+#       ]
+#   ].sum(axis=1)
+#   / commute_universe,
+#   pct_commute_15_to_44=lambda df: df[
+#       [
+#           "commute_10_to_14",
+#           "commute_15_to_20",
+#           "commute_20_to_29",
+#           "commute_30_to_44",
+#       ]
+#   ].sum(axis=1)
+#   / commute_universe,
+#   pct_commute_ge_45=lambda df: df[
+#       [
+#           "commute_45_to_59",
+#           "commute_gt_60",
+#       ]
+#   ].sum(axis=1)
+#   / commute_universe,
     min_ave_monthy_temp=lambda df: df[
         [
             "jan_ave_temp",
@@ -273,32 +258,15 @@ cbsas.assign(
             "inc_ge_75000",
         ]
     ].sum(axis=1) / income_universe,
-    labor=lambda df: df[
-        [
-            "ag_forestry_fish_mining",
-            "construction",
-            "manufacturing_nondurable",
-            "manufacturing_durable",
-            "comms_and_util",
-        ]
-    ].sum(axis=1) / industry_universe,
-    life_qual=lambda df: df[
-        [
-            "personal_entertainment_and_rec",
-            "educational_services",
-            "retail_trade",
-            "health_services",
-        ]
-    ].sum(axis=1) / industry_universe,
-    biz_financial=lambda df: df[
-        [
-            "other_pro_services",
-            "public_admin",  # 15
-            "finance_insurance_realestate",
-            "business_repair",
-            "wholesale_trade",
-        ]
-    ].sum(axis=1) / industry_universe,
-)[["cbsa_code", "cbsa_title"] + engineered_variables].to_csv(
+)
+
+
+cbsas[industry_variables] = cbsas[industry_variables].div(industry_universe, axis=0)
+
+
+cbsas["sector_diversity"] = entropy(cbsas[industry_variables], axis=1)
+
+
+cbsas[["cbsa_code", "cbsa_title"] + engineered_variables].to_csv(
     Path.cwd() / "prepped" / "1980" / "cbsas_engineered.csv", index=False
 )

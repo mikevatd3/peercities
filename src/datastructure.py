@@ -1,14 +1,5 @@
 import numpy as np
-from weights import (
-    POP_WEIGHT,
-    AGE_WEIGHT,
-    INCOME_WEIGHT,
-    INDUSTRY_WEIGHT,
-    COMMUTE_WEIGHT,
-    WEATHER_WEIGHT
-)
 
-# Set weights to indicator topics to adjust comparisons
 
 available_variables = [
     "state_code",
@@ -97,8 +88,7 @@ available_variables = [
     "sept_precip",
     "oct_precip",
     "nov_precip",
-    "dec_precip"
-    "ag_forestry_fish_mining",
+    "dec_precip" "ag_forestry_fish_mining",
     "construction",
     "manufacturing_nondurable",
     "manufacturing_durable",
@@ -136,12 +126,12 @@ industry_variables = [  # for industry-reduction analysis
 
 
 engineered_variables = [
-    "persons",
+    "log_persons",
     # NEED TO INCLUDE INDUSTRY SUMMARY VARIABLES
     # ONCE INDUSTRY ANALYSIS IS COMPLETE
-    "pct_commute_lt_15",
-    "pct_commute_15_to_44",
-    "pct_commute_ge_45",
+    # "pct_commute_lt_15",
+    # "pct_commute_15_to_44",
+    # "pct_commute_ge_45",
     "min_ave_monthy_temp",
     "max_ave_monthy_temp",
     "min_ave_monthy_precip",
@@ -155,30 +145,33 @@ engineered_variables = [
     "low_inc",
     "mid_inc",
     "hi_inc",
-    "labor",
-    "life_qual",
-    "biz_financial",
+    "ag_forestry_fish_mining",
+    "construction",
+    "manufacturing_nondurable",
+    "manufacturing_durable",
+    "transportation",
+    "comms_and_util",
+    "wholesale_trade",
+    "retail_trade",
+    "finance_insurance_realestate",
+    "business_repair",
+    "personal_entertainment_and_rec",
+    "health_services",
+    "educational_services",
+    "other_pro_services",
+    "public_admin",
+    "sector_diversity",
 ]
 
-scale = np.array([
-    POP_WEIGHT,
-    COMMUTE_WEIGHT,
-    COMMUTE_WEIGHT,
-    COMMUTE_WEIGHT,
-    WEATHER_WEIGHT,
-    WEATHER_WEIGHT,
-    WEATHER_WEIGHT,
-    WEATHER_WEIGHT,
-    AGE_WEIGHT,
-    AGE_WEIGHT,
-    AGE_WEIGHT,
-    AGE_WEIGHT,
-    AGE_WEIGHT,
-    AGE_WEIGHT,
-    INCOME_WEIGHT,
-    INCOME_WEIGHT,
-    INCOME_WEIGHT,
-    INDUSTRY_WEIGHT,
-    INDUSTRY_WEIGHT,
-    INDUSTRY_WEIGHT,
-])
+VARIABLE_CATEGORIES = 6
+
+category_counts = np.array(
+    [
+        1,  # Population
+        4,  # Climate
+        6,  # Age
+        3,  # Income
+        15,  # Industry dist
+        1,  # Induatry diversity
+    ]
+)
